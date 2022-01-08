@@ -18,8 +18,8 @@ def setup_root_logger():
     console.setFormatter(formatter)
 
     # configure rotating file handler
-    file = logging.handlers.RotatingFileHandler(filename="./fastapi-elk-stack.log", mode='a', maxBytes=15000000,
-                                                backupCount=5)
+    file = logging.handlers.RotatingFileHandler(filename="logs/fastapi-elk-stack.log", mode='a',
+                                                maxBytes=15000000, backupCount=5)
     file.setFormatter(formatter)
 
     # add handlers
