@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+
+    elasticsearch:
+        image: "docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.3"
+        container_name: elasticsearch
+        environment:
+            #- "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+            - "discovery.type=single-node"
+        ports:
+            - "9200:9200"
+        volumes:
+            - elasticsearch_data:/usr/share/elasticsearch/data
+
+    kibana:
+        image: "docker.elastic.co/kibana/kibana-oss:7.9.3"
+        container_name: kibana
+        ports:
+            - "5601:5601"
+        environment:
+            - ELASTICSEARCH_HOSTS:http://elasticsearch:9200
+        depends_on:
+            - elasticsearch
+
+    filebeat:
+        build:
+            context: ./filebeat
+        container_name: filebeat
+        volumes:
+            - ./fastapi-logs:/src/logs
+        depends_on:
+            - elasticsearch
+            - kibana
+
+    fastapi-app:
+        build:
+            context: ./src
+        container_name: fastapi-app
+        ports:
+            - "8000:8000"
+        volumes:
+            - ./fastapi-logs:/src/logs
+
+volumes:
+    elasticsearch_data:
+        driver: local
